@@ -1,1 +1,225 @@
+***1) CAMBIOS BÁSICOS***
+# Ver el directorio actual
+getwd()
 
+# Cambiar directorio
+setwd("ruta/a/carpeta")
+
+***2) INSTALAR Y CARGAR PAQUETES***
+EJEMPLO:
+install.packages("ggplot2")
+install.packages("dplyr")
+
+library(ggplot2)
+library(dplyr)
+
+EJEMPLO VARIOS PAQUETES:
+paquetes <- c("ggplot2", "dplyr", "UsingR")
+instalar <- paquetes[!paquetes %in% installed.packages()]
+if(length(instalar)) install.packages(instalar)
+lapply(paquetes, library, character.only = TRUE)
+
+***3) VARIABLES***
+num <- 10
+texto <- "Hola"
+logico <- TRUE
+
+x <- 3
+y <- 5
+x * y
+# Como R distingue mayúsculas...
+Z <- 4
+z  # error si no existe
+
+***4) VECTORES***
+x <- c(2,0,0,4)
+y <- c(1,9,9,9)
+
+x + y
+x * 4
+sqrt(x)
+
+#SECUENCIAS
+rep(1, 10)
+seq(2, 20, by = 2)
+
+#ACCESO
+x[1]
+x[-1]
+
+#VECTORES CON NOMBRES
+notas <- c(mate=8, historia=7, fisica=9)
+notas["mate"]
+mean(notas)
+
+***5) DATA FRAMES*** (Los data frames representan: tablas de pacientes, resultados experimentales, matrices clínicas)
+df <- data.frame(
+  edad = c(25,30,50),
+  peso = c(70,80,65),
+  sexo = c("M","F","M")
+)
+
+df$edad
+df[1,]
+df[ , "peso"]
+
+***6) LISTAS***
+geneset1 <- c("gene1","gene4")
+geneset2 <- c("gene2","gene5","gene7")
+
+genesets <- list(geneset1, geneset2)
+names(genesets) <- c("set1","set2")
+
+#PARA EXTRAER
+genesets[[1]]
+genesets[[1]][1]
+length(genesets)
+
+#PARA CREAR Y LLENAR UNA LISTA VACÍA
+lista <- vector("list", 3)
+for(i in 1:3){
+  lista[[i]] <- c(1,2,3*i)
+}
+
+***7) CONDICIONALES***
+if(4 > 5){
+  "Verdadero"
+} else {
+  "Falso"
+}
+
+#VECTORIZADO
+nums <- 1:8
+ifelse(nums %% 2 == 0, "Par", "Impar")
+
+***8) BUCLES***
+#FOR
+for(i in 1:6){
+  print(i^2)
+}
+
+#WHILE
+v <- 0
+while(v < 3){
+  v <- v + 1
+}
+
+#BREAK/NEXT
+for(i in 1:10){
+  if(i==3) break
+}
+
+***8) APPLY / LAPPLY***
+#FUNCIONES SIN BUCLES
+m <- matrix(1:6, nrow=3)
+
+apply(m, 1, mean)   # por filas
+apply(m, 2, sum)    # por columnas
+
+#LISTAS
+lapply(iris[1:4], mean)
+
+***9) IMPORTAR-EXPORTAR DATOS***
+write.csv(iris, "iris.csv", row.names=FALSE)
+df <- read.csv("iris.csv")
+
+***10) GRÁFICOS***
+#HISTOGRAMA
+hist(iris$Sepal.Length, col="lightblue")
+
+#DISPERSIÓN
+plot(iris$Petal.Length, iris$Petal.Width, col=iris$Species)
+
+#PIE CHART
+pie(table(iris$Species))
+
+#BOXPLOT
+boxplot(Sepal.Length ~ Species, data=iris)
+
+***11) GRÁFICOS CON ggplot2***
+#HISTOGRAMA
+ggplot(iris, aes(Sepal.Length, fill=Species)) +
+  geom_histogram(alpha=0.6, bins=20)
+
+#DISPERSIÓN
+ggplot(iris, aes(Petal.Length, Petal.Width, color=Species)) +
+  geom_point(size=3)
+
+#GRÁFICO CIRCULAR
+ggplot(as.data.frame(table(iris$Species)),
+       aes(x="", y=Freq, fill=Var1)) +
+  geom_col() +
+  coord_polar(theta="y")
+
+#BOXPLOT
+ggplot(iris, aes(Species, Sepal.Length, fill=Species)) +
+  geom_boxplot()
+
+***12) ESTADÍSTICA EN R***
+#TEST-T (Para comprobar si una variable clínica coincide con un valor de referencia)
+set.seed(100)
+x <- rnorm(50, mean=10, sd=0.5)
+t.test(x, mu=10)
+
+#WILCOXON(Igual que el test t, pero cuando los datos no son normales[PCR, ferritina, IL-6...])
+wilcox.test(x, mu=10)
+
+#DOS MUESTRAS(media de dos grupos independientes[SANO vs ENFERMOS])
+t.test(x, y)
+wilcox.test(x, y)
+
+#ANOVA(La media de 3 o más grupo[3 dosis de un fármaco; Comparar biomarcadores en 3 tipos de cáncer...])
+df <- data.frame(
+  valor = rnorm(60),
+  grupo = rep(c("A","B","C"), each=20)
+)
+
+summary(aov(valor ~ grupo, df))
+
+#KRUSKAL-WALLIS(Compara 3+ grupos sin suponer normalidad[conteos de colonias o células]) 
+kruskal.test(valor ~ grupo, df)
+
+#NORMAL(SHAPIRO-WILK[Determina si una variable sigue una distribución normal]) 
+shapiro.test(x)
+
+#KOLGOMOROV-SMIRNOV(Compara si dos distribuciones son iguales[patrones de intensidad en imágenes, tamaños de partículas extracelulares...])
+ks.test(rnorm(50), runif(50))
+
+#CHI-CUADRADO(Compara variables categóricas[¿Está asociada una mutación a un tipo de cáncer?])
+#FISHER(Igual que Chi-cuadrado, pero para pocas observaciones[Pocos pacientes o pocas mutaciones])
+chisq.test(c(15,19))
+
+m <- matrix(c(4,11,10,13), nrow=2)
+chisq.test(m)
+fisher.test(m)
+
+#CORRECCIÓN POR MÚLTIPLES TESTS(Cuando analizamos miles de variables a la vez[20.000 genes en RNA-seq, cientos de proteínas...])
+p <- c(0.11,0.8,0.04,0.004,0.67)
+p.adjust(p, method="BH")
+p.adjust(p, method="bonferroni")
+
+***13) GRÁFICAS AVANZADAS PARA BIOMEDICINA***
+#BOXPLOT GLUCOSA
+n <- 50
+glucosa_sanos <- rnorm(n, 95, 10)
+glucosa_diabeticos <- rnorm(n, 160, 20)
+
+df_glucosa <- data.frame(
+  glucosa = c(glucosa_sanos, glucosa_diabeticos),
+  grupo = rep(c("Sanos","Diabéticos"), each=n)
+)
+
+ggplot(df_glucosa, aes(grupo, glucosa, fill=grupo)) +
+  geom_boxplot(alpha=0.7)
+
+#DISPERSIÓN(PRESIÓN vs EDAD)
+set.seed(123)
+edad <- runif(100, 20, 80)
+genero <- sample(c("F","M"), 100, replace=TRUE)
+presion <- 0.6*edad + rnorm(100, 0, 10)
+
+df <- data.frame(edad, presion, genero)
+
+ggplot(df, aes(edad, presion, color=genero)) +
+  geom_point(size=3) +
+  geom_smooth(method="lm", se=FALSE)
