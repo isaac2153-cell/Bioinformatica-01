@@ -1,1 +1,165 @@
+***1) Leer un archivo de texto y separar encabezado y contenido***
 
+# with open() abre el archivo y lo cierra automáticamente al terminar el bloque
+with open("mi_archivo.txt") as f:  # "mi_archivo.txt" es un archivo de ejemplo
+    lines = f.readlines()          # readlines() lee todas las líneas en una lista
+
+# La primera línea suele ser un encabezado (por ejemplo, una descripción)
+header = lines[0].strip()          # strip() elimina espacios en blanco y saltos de línea
+
+# El resto de líneas contienen el contenido que nos interesa (por ejemplo, una secuencia)
+contenido = "".join(line.strip() for line in lines[1:])  
+# "".join(...) junta todos los elementos de la lista en un solo string
+
+print("Encabezado:")
+print(header)
+print("Contenido:")
+print(contenido)
+
+***2) Strings: cosas básicas***
+texto = "AAABBBCCCDD"   # Ejemplo de string, podría ser una secuencia cualquiera
+
+# len() da la longitud del string
+longitud = len(texto)   # Con len() contamos el número de caracteres
+
+# .count() cuenta cuántas veces aparece un carácter o subcadena
+num_A = texto.count("A")  # Cuenta cuántas 'A' hay en el string
+
+# Slicing (trocear un string)
+primeros_5 = texto[:5]    # Desde el inicio hasta el índice 4 (el 5 no se incluye)
+ultimos_3 = texto[-3:]    # Últimos 3 caracteres
+
+print("Longitud:", longitud)
+print("Número de A:", num_A)
+print("Primeros 5 caracteres:", primeros_5)
+print("Últimos 3 caracteres:", ultimos_3)
+
+***3) Calcular porcentajes (por ejemplo, porcentaje de un símbolo)***
+# Ejemplo de cálculo de porcentaje de un carácter en un string
+
+secuencia = "AAACCCGGGTTT"   # String de ejemplo
+num_C = secuencia.count("C") # Número de 'C' en la secuencia
+longitud = len(secuencia)    # Longitud de la secuencia
+
+porcentaje_C = (num_C / longitud) * 100  # Fórmula del porcentaje
+
+# f-string para mostrar el porcentaje con dos decimales
+print(f"Porcentaje de C en la secuencia: {porcentaje_C:.2f}%")
+# {porcentaje_C:.2f} significa que mostramos el número con 2 decimales
+
+***4) Bucles for: recorrer strings y listas***
+secuencia = "ABCDABCD"  # Ejemplo de string
+
+# Recorrer carácter a carácter
+for letra in secuencia:                        # Recorre cada letra del string
+    print("Letra actual:", letra)
+
+# Recorrer una lista de líneas (por ejemplo, las líneas de un archivo)
+lineas = [">encabezado", "AAA", "BBB", "CCC"]  # Lista de ejemplo
+
+for linea in lineas:
+    linea_limpia = linea.strip()              # strip() elimina saltos de línea
+    print("Procesando línea:", linea_limpia)
+
+***5) Diccionarios***
+
+(Muy útil para cosas tipo “nombre de enzima → patrón de corte”)
+
+# Creamos un diccionario donde cada clave tiene un valor asociado
+acciones = {
+    "A": "acción 1",
+    "B": "acción 2",
+    "C": "acción 3"
+}
+
+# Acceder al valor asociado a una clave
+print(acciones["A"])  # Muestra "acción 1"
+
+# Recorrer todas las claves y valores del diccionario
+for clave, valor in acciones.items():  # .items() devuelve pares (clave, valor)
+    print("Clave:", clave, "->", "Valor:", valor)
+
+***6) Condicionales if, elif, else***
+x = 10  # Variable de ejemplo
+
+if x > 10:
+    print("x es mayor que 10")
+elif x == 10:
+    print("x es exactamente 10")
+else:
+    print("x es menor que 10")
+
+EJEMPLO APLICADO
+letra = "A"
+
+if letra == "A":
+    print("Es A")
+elif letra == "T":
+    print("Es T")
+else:
+    print("No es ni A ni T")
+
+***7) Funciones: agrupar código reutilizable***
+def sumar(a, b):        # a y b son parámetros de entrada
+    resultado = a + b   # Hacemos la operación que queremos
+    return resultado    # return devuelve el resultado al llamante
+
+# Para usar la función, la llamamos con argumentos concretos
+x = sumar(3, 5)         # Aquí a=3 y b=5
+print("Resultado de la suma:", x)
+
+***8) Trabajar con listas: añadir y ordenar fragmentos, ORFs...***
+# Crear una lista vacía para ir guardando resultados
+resultados = []
+
+# Añadir elementos con append()
+resultados.append("fragmento_1")
+resultados.append("fragmento_2")
+
+print("Lista de resultados:", resultados)
+
+# Ordenar la lista (por ejemplo, por longitud de string)
+resultados_ordenados = sorted(resultados, key=len, reverse=True)
+# key=len -> ordena según la longitud; reverse=True -> de mayor a menor
+
+print("Resultados ordenados:", resultados_ordenados)
+
+***9) Expresiones regulares básicas con expresiones regulares***
+import re  # Para usar expresiones regulares
+
+encabezado = ">id1234 descripcion del ejemplo"
+
+# Queremos extraer "id1234" del encabezado
+# El patrón r">(\S+)" significa:
+#   >   : el carácter '>'
+#   (\S+): un grupo de uno o más caracteres que no son espacio (el identificador)
+
+patron = r">(\S+)"
+resultado = re.search(patron, encabezado)  # re.search busca el patrón en el string
+
+if resultado:
+    identificador = resultado.group(1)    # group(1) es lo que hay dentro de los paréntesis
+    print("Identificador encontrado:", identificador)
+else:
+    print("No se encontró identificador")
+
+OTRA APLICACIÓN: Buscar todas las apariciones dentro de un patrón de texto
+
+texto = "abc123 xyz456 abc789"
+
+# Queremos todos los 'abc' seguidos de 3 números
+patron = r"abc\d\d\d"   # \d significa dígito, \d\d\d son 3 dígitos
+
+coincidencias = re.findall(patron, texto)  # findall devuelve una lista con todas las coincidencias
+
+print("Coincidencias encontradas:", coincidencias)
+
+***10) Formatear resultados de manera clara (f-strings)***
+longitud = 1000
+porcentaje = 43.789
+
+# f-string con variables incrustadas
+print(f"La longitud es {longitud} caracteres.")
+
+# Mostrar porcentaje con solo 2 decimales
+print(f"El porcentaje es {porcentaje:.2f}%")
